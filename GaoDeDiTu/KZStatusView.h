@@ -2,9 +2,10 @@
 //  KZStatusView.h
 //  MapDemo
 //
-//  Created by ORCHAN on 15/7/13.
-//  Copyright (c) 2015年 ORCHAN. All rights reserved.
+//  Created by Apple on 9/14/15.
+//  Copyright (c) 2015 广东华讯网络投资有限公司. All rights reserved.
 //
+
 
 #import <UIKit/UIKit.h>
 #import "MZTimerLabel.h"
@@ -34,10 +35,10 @@
 // 与上一个点的距离
 @property (weak, nonatomic) IBOutlet UILabel *distanceWithPreLoc;
 
-// 是否打开百度地理位置服务
+// 是否打开高德地理位置服务
 @property (weak, nonatomic) IBOutlet UILabel *startLocatonServiceLabel;
 
-// 是否停止百度地理位置复位
+// 是否停止高德地理位置复位
 @property (weak, nonatomic) IBOutlet UILabel *stopLocatonServiceLabel;
 
 // 是否已经插上开始的旗帜

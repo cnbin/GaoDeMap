@@ -2,8 +2,8 @@
 //  AppDelegate.m
 //  GaoDeDiTu
 //
-//  Created by Apple on 9/22/15.
-//  Copyright © 2015 binbin. All rights reserved.
+//  Created by Apple on 9/14/15.
+//  Copyright (c) 2015 广东华讯网络投资有限公司. All rights reserved.
 //
 
 #import "AppDelegate.h"

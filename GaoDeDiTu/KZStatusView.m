@@ -2,9 +2,10 @@
 //  KZStatusView.m
 //  MapDemo
 //
-//  Created by ORCHAN on 15/7/13.
-//  Copyright (c) 2015年 ORCHAN. All rights reserved.
+//  Created by Apple on 9/14/15.
+//  Copyright (c) 2015 广东华讯网络投资有限公司. All rights reserved.
 //
+
 
 #import "KZStatusView.h"
 
