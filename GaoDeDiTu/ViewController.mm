@@ -76,23 +76,36 @@ typedef enum : NSUInteger {
     self.mapView = [[MAMapView alloc]initWithFrame:self.view.bounds];
     
     // 设置MapView的一些属性
-    [self setMapViewProperty];
     
-    CLLocationCoordinate2D coor ={23.5610,116.3532};
-    self.mapView.centerCoordinate = coor;
+    // 设置定位模式
+    self.mapView.userTrackingMode = MAUserTrackingModeFollow;
+    
+    //设定定位的最小更新距离
+    self.mapView.distanceFilter = 5;
+    
+//    CLLocationCoordinate2D coor ={23.5610,116.3532};
+//    self.mapView.centerCoordinate = coor;
 
     self.trail = TrailEnd;
-    
+
     [self.view addSubview:self.mapView];
     [self.view addSubview:self.statusView.view];
     
 //    [self.mapView addAnnotations:self.annotations];
 //    [self.mapView showAnnotations:self.annotations edgePadding:UIEdgeInsetsMake(20, 20, 20, 80) animated:YES];
+    
+  
+  
 }
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
 }
+
+//- (void)viewDidAppear:(BOOL)animated {
+//    
+//    [self.mapView setZoomLevel:10 animated:YES];
+//}
 
 - (void)viewWillAppear:(BOOL)animated
 {
@@ -135,14 +148,6 @@ typedef enum : NSUInteger {
                                                                             action:@selector(stopTrack)];
 }
 
-/**
- *  设置高德MapView的一些属性
- */
-- (void)setMapViewProperty
-{
-    // 设置定位模式
-    self.mapView.userTrackingMode = MAUserTrackingModeNone;
-}
 
 #pragma mark - "IBAction" Method
 
@@ -163,14 +168,23 @@ typedef enum : NSUInteger {
     self.statusView.stopLocatonServiceLabel.text = @"NO";
     self.statusView.startPointLabel.text = @"YES";
     
-    CLLocationCoordinate2D center;
-    center.latitude = 23.5610;
-    center.longitude = 116.3532;
-
-    MACoordinateRegion adjustRegion = [self.mapView regionThatFits:MACoordinateRegionMake(center,MACoordinateSpanMake(0.02f,0.02f))];
-
-    [self.mapView setRegion:adjustRegion animated:YES];
     
+//    self.mapView.userLocation.location.coordinate;
+    
+//    CLLocationCoordinate2D center;
+//    center.latitude = 23.5610;
+//    center.longitude = 116.3532;
+//
+    
+    
+//    MACoordinateRegion adjustRegion = [self.mapView regionThatFits:MACoordinateRegionMake(self.mapView.userLocation.location.coordinate,MACoordinateSpanMake(0.02f,0.02f))];
+//
+//    [self.mapView setRegion:adjustRegion animated:YES];
+    
+
+    MACoordinateRegion region = MACoordinateRegionMakeWithDistance(_mapView.centerCoordinate, 1600*2,1600*2);
+    region = [_mapView regionThatFits:region];
+    [_mapView setRegion:region animated:YES];
     
     // 5.如果计时器在计时则复位
     if ([self.statusView.timerLabel counting] || self.statusView.timerLabel.text != nil) {
@@ -239,6 +253,27 @@ typedef enum : NSUInteger {
 updatingLocation:(BOOL)updatingLocation
 {
 
+//        MACoordinateSpan span=MACoordinateSpanMake(0.01, 0.01);
+//        MACoordinateRegion region=MACoordinateRegionMake(userLocation.location.coordinate, span);
+//        [_mapView setRegion:region animated:true];
+//    
+    //    MACoordinateRegion adjustRegion = [self.mapView regionThatFits:MACoordinateRegionMake(self.mapView.userLocation.location.coordinate,MACoordinateSpanMake(0.02f,0.02f))];
+    //
+    //    [self.mapView setRegion:adjustRegion animated:YES];
+    
+    
+    if(CLLocationCoordinate2DIsValid(CLLocationCoordinate2DMake(userLocation.location.coordinate.latitude, userLocation.location.coordinate.longitude))){
+        
+//        [_mapView removeAnnotations:_mapView.annotations];
+//        
+//        MAPointAnnotation *pointAnnotation = [[MAPointAnnotation alloc] init];
+//        pointAnnotation.coordinate = CLLocationCoordinate2DMake(userLocation.location.coordinate.latitude, userLocation.location.coordinate.longitude);
+//        [_mapView addAnnotation:pointAnnotation];
+        
+        [_mapView setCenterCoordinate:CLLocationCoordinate2DMake(userLocation.location.coordinate.latitude,  userLocation.location.coordinate.longitude) animated:YES];
+    }
+
+    
     // 1. 动态更新我的位置数据
     //[self.mapView updateLocationData:userLocation];
     NSLog(@"La:%f, Lo:%f", userLocation.location.coordinate.latitude, userLocation.location.coordinate.longitude);
@@ -256,14 +291,16 @@ updatingLocation:(BOOL)updatingLocation
         return;
     }
     
-    // 开始记录轨迹
-   if (TrailStart == self.trail) {
-       
-       if (userLocation.location.coordinate.latitude >0 && userLocation.location.coordinate.longitude >0 ){
-           
-           [self startTrailRouteWithUserLocation:userLocation];
-       }
-    }
+    [self startTrailRouteWithUserLocation:userLocation];
+    
+//    // 开始记录轨迹
+//   if (TrailStart == self.trail) {
+//       
+//       if (userLocation.location.coordinate.latitude >0 && userLocation.location.coordinate.longitude >0 ){
+//           
+//           
+//       }
+//    }
     
 }
 
@@ -284,7 +321,7 @@ updatingLocation:(BOOL)updatingLocation
         NSLog(@"与上一位置点的距离为:%f",distance);
 
         // (5米门限值，存储数组划线) 如果距离少于 5 米，则忽略本次数据直接返回该方法
-        if (distance < 2) {
+        if (distance < 5) {
             NSLog(@"与前一更新点距离小于5m，直接返回该方法");
             return;
         }
@@ -402,6 +439,7 @@ updatingLocation:(BOOL)updatingLocation
     [self.mapView removeOverlay:self.polyLine];
     self.polyLine = nil;
     
+    [self.mapView removeAnnotations:self.mapView.annotations];
 }
 
 /**
@@ -456,7 +494,7 @@ updatingLocation:(BOOL)updatingLocation
         polylineRenderer.strokeColor = [[UIColor redColor] colorWithAlphaComponent:0.7];
         return polylineRenderer;
     }
-    
+
     return nil;
 }
 
